@@ -1,0 +1,53 @@
+{
+    "log": {
+        "loglevel": "info"
+    },
+    "inbounds": [
+        {
+            "protocol": "vless",
+            "port": 443,
+            "settings": {
+                "clients": [
+                    {
+                        "id": "<uuid>",
+                        "email": "<name>"
+                    }
+                ],
+                "decryption": "none"
+            },
+            "streamSettings": {
+                "network": "tcp",
+                "security": "tls",
+                "tlsSettings": {
+                    "serverName": "osu.ppy.sh",
+                    "certificates": [
+                        {
+                            "usage": "encipherment",
+                            "certificateFile": "/etc/tls/server.crt",
+                            "keyFile": "/etc/tls/server.key"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "protocol": "freedom"
+        },
+        {
+            "protocol": "blackhole",
+            "tag": "block"
+        }
+    ],
+    "routing": {
+        "domainStrategy": "IPOnDemand",
+        "rules": [
+            {
+                "type": "field",
+                "ip": ["geoip:private"],
+                "outboundTag": "block"
+            }
+        ]
+    }
+}

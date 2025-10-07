@@ -1,0 +1,81 @@
+{
+    "log": {
+        "loglevel": "info"
+    },
+    "inbounds": [
+        {
+            "protocol": "socks",
+            "tag": "socks",
+            "listen": "127.0.0.1",
+            "port": 2000,
+            "settings": {
+                "udp": true
+            },
+            "sniffing": {
+                "enabled": true,
+                "destOverride": ["http", "tls"]
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "protocol": "blackhole",
+            "tag": "block"
+        },
+        {
+            "protocol": "freedom",
+            "tag": "bypass"
+        },
+        {
+            "protocol": "vless",
+            "tag": "main",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "<ip>",
+                        "port": 443,
+                        "users": [
+                            {
+                                "id": "<uuid>",
+                                "encryption": "none"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "tcp",
+                "security": "tls",
+                "tlsSettings": {
+                    "serverName": "osu.ppy.sh",
+                    "certificates": [
+                        {
+                            "usage": "verify",
+                            "certificateFile": "/etc/tls/ca.crt",
+                            "keyFile": "/etc/tls/ca.key"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "routing": {
+        "domainStrategy": "IPOnDemand",
+        "rules": [
+            {
+                "type": "field",
+                "ip": [
+                    "geoip:private"
+                ],
+                "outboundTag": "bypass"
+            },
+            {
+                "type": "field",
+                "inboundTag": [
+                    "socks"
+                ],
+                "outboundTag": "main"
+            }
+        ]
+    }
+}
