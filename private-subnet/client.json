@@ -1,0 +1,81 @@
+{
+    "log": {
+        "loglevel": "info"
+    },
+    "inbounds": [
+        {
+            "protocol": "http",
+            "listen": "127.0.0.1",
+            "port": 2001,
+            "sniffing": {
+                "enabled": true,
+                "destOverride": ["http", "tls"]
+            }
+        },
+        {
+            "protocol": "socks",
+            "listen": "127.0.0.1",
+            "port": 2002,
+            "settings": {
+                "udp": true
+            },
+            "sniffing": {
+                "enabled": true,
+                "destOverride": ["http", "tls"]
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "protocol": "freedom"
+        },
+        {
+            "protocol": "vmess",
+            "tag": "private-subnet",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "<bastion host public ip>",
+                        "port": 3000,
+                        "users": [
+                            {
+                                "id": "<id>"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "protocol": "vmess",
+            "tag": "service-direct",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "<bastion host public ip>",
+                        "port": 3001,
+                        "users": [
+                            {
+                                "id": "<id>"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ],
+    "routing": {
+        "domainStrategy": "IPOnDemand",
+        "rules": [
+            {
+                "type": "field",
+                "domain": ["service.private"],
+                "outboundTag": "service-direct"
+            },
+            {
+                "type": "field",
+                "outboundTag": "private-subnet"
+            }
+        ]
+    }
+}

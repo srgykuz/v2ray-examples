@@ -1,0 +1,65 @@
+{
+    "log": {
+        "loglevel": "info"
+    },
+    "inbounds": [
+        {
+            "protocol": "vmess",
+            "tag": "all",
+            "port": 3000,
+            "settings": {
+                "clients": [
+                    {
+                        "id": "<id>",
+                        "email": "<name>"
+                    }
+                ]
+            }
+        },
+        {
+            "protocol": "vmess",
+            "tag": "service",
+            "port": 3001,
+            "settings": {
+                "clients": [
+                    {
+                        "id": "<id>",
+                        "email": "<name>"
+                    }
+                ]
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "protocol": "blackhole",
+            "tag": "block"
+        },
+        {
+            "protocol": "freedom",
+            "tag": "bypass"
+        },
+        {
+            "protocol": "freedom",
+            "tag": "service",
+            "settings": {
+                "redirect": "<nginx private ip>:5601"
+            }
+        }
+    ],
+    "routing": {
+        "domainStrategy": "IPOnDemand",
+        "rules": [
+            {
+                "type": "field",
+                "inboundTag": ["all"],
+                "outboundTag": "bypass"
+            },
+            {
+                "type": "field",
+                "inboundTag": ["service"],
+                "outboundTag": "service"
+            }
+        ]
+    }
+}
