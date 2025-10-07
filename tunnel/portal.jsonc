@@ -1,0 +1,59 @@
+{
+    "log": {
+        "loglevel": "info"
+    },
+    "reverse": {
+        "portals": [
+            {
+                "tag": "portal",
+                "domain": "tunnel.vpn"
+            }
+        ]
+    },
+    "inbounds": [
+        {
+            "tag": "tunnel",
+            "protocol": "vmess",
+            "port": 2001,
+            "settings": {
+                "clients": [
+                    {
+                        "id": "<bridge uuid>"
+                    }
+                ]
+            }
+        },
+        {
+            "tag": "proxy",
+            "protocol": "http",
+            "port": 8001,
+            "sniffing": {
+                "enabled": true,
+                "destOverride": ["http", "tls"]
+            },
+            "settings": {
+                "timeout": 30,
+                "accounts": [
+                    {
+                        "user": "<proxy user>",
+                        "pass": "<proxy pass>"
+                    }
+                ]
+            }
+        }
+    ],
+    "routing": {
+        "rules": [
+            {
+                "type": "field",
+                "inboundTag": ["tunnel"],
+                "outboundTag": "portal"
+            },
+            {
+                "type": "field",
+                "inboundTag": ["proxy"],
+                "outboundTag": "portal"
+            }
+        ]
+    }
+}

@@ -1,0 +1,82 @@
+{
+    "log": {
+        "loglevel": "info"
+    },
+    "reverse": {
+        "bridges": [
+            {
+                "tag": "bridge",
+                "domain": "tunnel.vpn"
+            }
+        ]
+    },
+    "outbounds": [
+        {
+            "tag": "block",
+            "protocol": "blackhole"
+        },
+        {
+            "tag": "out",
+            "protocol": "freedom"
+        },
+        {
+            "tag": "tunnel",
+            "protocol": "vmess",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "<portal ip>",
+                        "port": 2001,
+                        "users": [
+                            {
+                                "id": "<bridge uuid>"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ],
+    "routing": {
+        "domainStrategy": "IPOnDemand",
+        "rules": [
+            {
+                "type": "field",
+                "inboundTag": ["bridge"],
+                "domain": ["full:tunnel.vpn"],
+                "outboundTag": "tunnel"
+            },
+
+            // Disallow connections to local network
+            {
+                "type": "field",
+                "inboundTag": ["bridge"],
+                "ip": [
+                    "127.0.0.0/8",
+                    "10.0.0.0/8",
+                    "172.16.0.0/12",
+                    "192.168.0.0/16",
+                    "100.64.0.0/10",
+                    "169.254.0.0/16",
+                    "224.0.0.0/4",
+                    "255.255.255.255",
+                    "192.0.2.0/24",
+                    "198.51.100.0/24",
+                    "203.0.113.0/24",
+                    "192.88.99.0/24",
+                    "192.0.0.0/24"
+                ],
+                "outboundTag": "block"
+            },
+
+            // Allow only HTTP(S) connections, all others by default are blocked
+            {
+                "type": "field",
+                "inboundTag": ["bridge"],
+                "port": "80,443",
+                "network": "tcp",
+                "outboundTag": "out"
+            }
+        ]
+    }
+}
