@@ -1,0 +1,25 @@
+# V2Ray Examples
+
+Here I put examples of V2Ray (V2Fly, Xray, sing-box) usage. This project is addition to [v2ray-examples](https://github.com/v2fly/v2ray-examples) and [Xray-examples](https://github.com/XTLS/Xray-examples).
+
+## Examples
+
+### [docker](/docker/)
+
+Execute V2Ray using Docker Compose.
+
+### [private-subnet](/private-subnet/)
+
+Access remote private subnet. You should deploy bastion host in a public subnet which runs `server.json`. Bastion host forwards traffic to any address in the private subnet or to specific service in the private subnet.
+
+### [proxylist-bypasslist](/proxylist-bypasslist/)
+
+At client side configure protocols that: proxy all sites, proxy specific sites and bypass all others, bypass specific sites and proxy all others. Quickly switch between these protocols as needed.
+
+### [self-signed-tls](/self-signed-tls/)
+
+Generate self-signed CA and server certificate for use in TLS without enabling `insecure` option. Avoid MITM attack at client side by properly validating TLS.
+
+### [tunnel](/tunnel/)
+
+Access private host from public internet or turn this host into proxy. Run `bridge.jsonc` at the private host and run `portal.jsonc` at a public VPS. Traffic flows this way: client -> VPS (portal) -> private host (bridge) -> internet.
