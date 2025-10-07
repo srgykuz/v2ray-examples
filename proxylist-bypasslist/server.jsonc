@@ -1,0 +1,90 @@
+{
+    "log": {
+        "loglevel": "info"
+    },
+    "inbounds": [
+        {
+            "protocol": "vless",
+            "port": 1001,
+            "settings": {
+                "clients": [
+                    {
+                        "id": "<uuid>",
+                        "email": "<name>"
+                    }
+                ],
+                "decryption": "none"
+            },
+            "streamSettings": {
+                "network": "tcp",
+                "security": "tls",
+                "tlsSettings": {
+                    "certificates": [
+                        {
+                            "certificateFile": "/etc/tls/server.crt",
+                            "keyFile": "/etc/tls/server.key"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "protocol": "vmess",
+            "port": 1002,
+            "settings": {
+                "clients": [
+                    {
+                        "id": "<uuid>",
+                        "email": "<name>"
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "tcp",
+                "tcpSettings": {
+                    "header": {
+                        "type": "http"
+                    }
+                }
+            }
+        },
+        {
+            "protocol": "vmess",
+            "port": 1003,
+            "settings": {
+                "clients": [
+                    {
+                        "id": "<uuid>",
+                        "email": "<name>"
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "kcp",
+                "kcpSettings": {
+                    "uplinkCapacity": 10,
+                    "downlinkCapacity": 40
+                }
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "protocol": "freedom"
+        },
+        {
+            "protocol": "blackhole",
+            "tag": "block"
+        }
+    ],
+    "routing": {
+        "domainStrategy": "IPOnDemand",
+        "rules": [
+            {
+                "type": "field",
+                "ip": ["geoip:private"],
+                "outboundTag": "block"
+            }
+        ]
+    }
+}

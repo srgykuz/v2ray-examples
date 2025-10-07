@@ -1,0 +1,293 @@
+{
+    "log": {
+        "loglevel": "info"
+    },
+    "inbounds": [
+        // Available options are based on ports.
+        //
+        // Protocols:
+        // 1) 21xx - HTTP (in) + main proxy protocol (out)
+        // 2) 22xx - SOCKS (in) + main proxy protocol (out)
+        // 3) 23xx - SOCKS (in) + backup 1 proxy protocol (out)
+        // 4) 24xx - SOCKS (in) + backup 2 proxy protocol (out)
+        //
+        // You should use protocols 1 and 2. Others should be treated only as backups,
+        // in case if main protocol will be blocked. In this case you should replace main
+        // protocol.
+        //
+        // Lists:
+        // 1) xx01 - proxy all sites
+        // 2) xx02 - proxy specific sites and bypass all others
+        // 3) xx03 - bypass specific sites and proxy all others
+        //
+        // Backup protocols support only list 1. Normally protocols 1 and 2 should use same list
+        // at the same time, i.e. if you use 2102, then you also should use 2202.
+        //
+        // Examples:
+        // 1) 2102 - proxy specific sites and bypass all others using HTTP proxy with main protocol
+        // 2) 2201 - proxy all sites using SOCKS proxy with main protocol
+        //
+        // Recommended setup for daily usage is 2102 and 2202. Adjust as needed based on circumstances.
+
+        {
+            "protocol": "http",
+            "tag": "http/main/all",
+            "listen": "127.0.0.1",
+            "port": 2101,
+            "sniffing": {
+                "enabled": true,
+                "destOverride": ["http", "tls"]
+            }
+        },
+        {
+            "protocol": "http",
+            "tag": "http/main/proxylist",
+            "listen": "127.0.0.1",
+            "port": 2102,
+            "sniffing": {
+                "enabled": true,
+                "destOverride": ["http", "tls"]
+            }
+        },
+        {
+            "protocol": "http",
+            "tag": "http/main/bypasslist",
+            "listen": "127.0.0.1",
+            "port": 2103,
+            "sniffing": {
+                "enabled": true,
+                "destOverride": ["http", "tls"]
+            }
+        },
+
+        {
+            "protocol": "socks",
+            "tag": "socks/main/all",
+            "listen": "127.0.0.1",
+            "port": 2201,
+            "settings": {
+                "udp": true
+            },
+            "sniffing": {
+                "enabled": true,
+                "destOverride": ["http", "tls"]
+            }
+        },
+        {
+            "protocol": "socks",
+            "tag": "socks/main/proxylist",
+            "listen": "127.0.0.1",
+            "port": 2202,
+            "settings": {
+                "udp": true
+            },
+            "sniffing": {
+                "enabled": true,
+                "destOverride": ["http", "tls"]
+            }
+        },
+        {
+            "protocol": "socks",
+            "tag": "socks/main/bypasslist",
+            "listen": "127.0.0.1",
+            "port": 2203,
+            "settings": {
+                "udp": true
+            },
+            "sniffing": {
+                "enabled": true,
+                "destOverride": ["http", "tls"]
+            }
+        },
+
+        {
+            "protocol": "socks",
+            "tag": "socks/backup-1/all",
+            "listen": "127.0.0.1",
+            "port": 2301,
+            "settings": {
+                "udp": true
+            },
+            "sniffing": {
+                "enabled": true,
+                "destOverride": ["http", "tls"]
+            }
+        },
+
+        {
+            "protocol": "socks",
+            "tag": "socks/backup-2/all",
+            "listen": "127.0.0.1",
+            "port": 2401,
+            "settings": {
+                "udp": true
+            },
+            "sniffing": {
+                "enabled": true,
+                "destOverride": ["http", "tls"]
+            }
+        }
+    ],
+    "outbounds": [
+        // Keep blackhole as the first (default), not freedom.
+        // In case of unexpected blocking this will indicate that routing is misconfigured.
+        {
+            "protocol": "blackhole",
+            "tag": "block"
+        },
+        {
+            "protocol": "freedom",
+            "tag": "bypass"
+        },
+
+        // TCP + VLESS + TLS
+        {
+            "protocol": "vless",
+            "tag": "main",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "<ip>",
+                        "port": 1001,
+                        "users": [
+                            {
+                                "id": "<uuid>",
+                                "encryption": "none"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "tcp",
+                "security": "tls"
+            }
+        },
+
+        // TCP + VMess
+        {
+            "protocol": "vmess",
+            "tag": "backup-1",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "<ip>",
+                        "port": 1002,
+                        "users": [
+                            {
+                                "id": "<uuid>"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "tcpSettings": {
+                    "header": {
+                        "type": "http"
+                    }
+                }
+            }
+        },
+
+        // KCP (UDP) + VMess
+        {
+            "protocol": "vmess",
+            "tag": "backup-2",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "<ip>",
+                        "port": 1003,
+                        "users": [
+                            {
+                                "id": "<uuid>"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "kcp",
+                "kcpSettings": {
+                    "uplinkCapacity": 10,
+                    "downlinkCapacity": 40
+                }
+            }
+        }
+    ],
+    "routing": {
+        "domainStrategy": "IPOnDemand",
+        "rules": [
+            {
+                "type": "field",
+                "ip": [
+                    "geoip:private"
+                ],
+                "outboundTag": "bypass"
+            },
+            {
+                "type": "field",
+                "inboundTag": [
+                    "http/main/all",
+                    "socks/main/all"
+                ],
+                "outboundTag": "main"
+            },
+            {
+                "type": "field",
+                "inboundTag": [
+                    "http/main/proxylist",
+                    "socks/main/proxylist"
+                ],
+                "domains": [
+                    "domain:chatgpt.com",
+                    "domain:gemini.google.com",
+                    "domain:grok.com"
+                ],
+                "outboundTag": "main"
+            },
+            {
+                "type": "field",
+                "inboundTag": [
+                    "http/main/proxylist",
+                    "socks/main/proxylist"
+                ],
+                "outboundTag": "bypass"
+            },
+            {
+                "type": "field",
+                "inboundTag": [
+                    "http/main/bypasslist",
+                    "socks/main/bypasslist"
+                ],
+                "domains": [
+                    "regexp:\\.ru$"
+                ],
+                "outboundTag": "bypass"
+            },
+            {
+                "type": "field",
+                "inboundTag": [
+                    "http/main/bypasslist",
+                    "socks/main/bypasslist"
+                ],
+                "outboundTag": "main"
+            },
+            {
+                "type": "field",
+                "inboundTag": [
+                    "socks/backup-1/all"
+                ],
+                "outboundTag": "backup-1"
+            },
+            {
+                "type": "field",
+                "inboundTag": [
+                    "socks/backup-2/all"
+                ],
+                "outboundTag": "backup-2"
+            }
+        ]
+    }
+}
