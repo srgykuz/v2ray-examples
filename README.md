@@ -32,6 +32,10 @@ Generate self-signed CA and server certificate for use in TLS without enabling `
 
 Execute V2Ray using systemd. Put: executable in `/usr/local/bin`, config in `/usr/local/etc/v2ray`, log in `/var/log/v2ray`, service as `/etc/systemd/system/v2ray.service`, logrotate as `/etc/logrotate.d/v2ray`. Run as user `nobody`.
 
+### [transparent](/transparent/)
+
+Run V2Ray as transparent proxy to intercept all traffic. For example you can run it on Raspberry Pi and set it as default gateway for router to transparently proxy all LAN devices. Replace `192.168.0.1` with router IP, replace `192.168.0.102` with client IP, replace `192.168.0.0/16` with LAN subnet.
+
 ### [tunnel](/tunnel/)
 
 Access private host from public internet or turn this host into proxy. Run `bridge.jsonc` at the private host and run `portal.jsonc` at a public VPS. Traffic flows this way: client -> VPS (portal) -> private host (bridge) -> internet.

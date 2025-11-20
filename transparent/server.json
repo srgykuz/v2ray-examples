@@ -1,0 +1,58 @@
+{
+    "log": {
+        "loglevel": "info"
+    },
+    "inbounds": [
+        {
+            "tag": "vless-tls",
+            "protocol": "vless",
+            "port": 443,
+            "settings": {
+                "clients": [
+                    {
+                        "id": "<id>",
+                        "email": "<name>",
+                        "flow": "xtls-rprx-vision"
+                    }
+                ],
+                "decryption": "none"
+            },
+            "streamSettings": {
+                "security": "tls",
+                "tlsSettings": {
+                    "minVersion": "1.2",
+                    "certificates": [
+                        {
+                            "certificateFile": "/etc/xray/fullchain.pem",
+                            "keyFile": "/etc/xray/privkey.pem"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "tag": "direct",
+            "protocol": "freedom",
+            "settings": {
+                "domainStrategy": "UseIPv4v6"
+            }
+        },
+        {
+            "tag": "block",
+            "protocol": "blackhole"
+        }
+    ],
+    "routing": {
+        "domainStrategy": "IPOnDemand",
+        "rules": [
+            {
+                "ip": [
+                    "geoip:private"
+                ],
+                "outboundTag": "block"
+            }
+        ]
+    }
+}

@@ -1,0 +1,218 @@
+{
+    "log": {
+        "loglevel": "info",
+        "access": "/var/log/xray/access.log",
+        "error": "/var/log/xray/error.log",
+        "dnsLog": true
+    },
+    "inbounds": [
+        {
+            "tag": "transparent",
+            "protocol": "tunnel",
+            "listen": "127.0.0.1",
+            "port": 2000,
+            "settings": {
+                "network": "tcp,udp",
+                "followRedirect": true
+            },
+            "sniffing": {
+                "enabled": true,
+                "destOverride": [
+                    "http",
+                    "tls"
+                ]
+            },
+            "streamSettings": {
+                "sockopt": {
+                    "tproxy": "tproxy",
+                    "mark": 255
+                }
+            }
+        },
+        {
+            "tag": "socks",
+            "protocol": "socks",
+            "listen": "0.0.0.0",
+            "port": 2001,
+            "settings": {
+                "udp": true
+            },
+            "sniffing": {
+                "enabled": true,
+                "destOverride": [
+                    "http",
+                    "tls"
+                ]
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "tag": "block",
+            "protocol": "blackhole"
+        },
+        {
+            "tag": "direct",
+            "protocol": "freedom",
+            "settings": {
+                "domainStrategy": "UseIPv4"
+            },
+            "streamSettings": {
+                "sockopt": {
+                    "mark": 255
+                }
+            }
+        },
+        {
+            "tag": "dns-out",
+            "protocol": "dns",
+            "streamSettings": {
+                "sockopt": {
+                    "mark": 255
+                }
+            }
+        },
+        {
+            "tag": "proxy",
+            "protocol": "vless",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "<your domain>",
+                        "port": 443,
+                        "users": [
+                            {
+                                "id": "<id>",
+                                "encryption": "none",
+                                "flow": "xtls-rprx-vision"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "security": "tls",
+                "tlsSettings": {
+                    "serverName": "<your domain>",
+                    "fingerprint": "chrome"
+                },
+                "sockopt": {
+                    "mark": 255
+                }
+            }
+        }
+    ],
+    "dns": {
+        "tag": "dns-in",
+        "queryStrategy": "UseIPv4",
+        "hosts": {
+            "dns.cloudflare.com": "1.1.1.1",
+            "dns.google": "8.8.8.8",
+            "<your domain>": "<server ip>"
+        },
+        "servers": [
+            {
+                "address": "192.168.0.1",
+                "domains": [
+                    "geosite:private",
+                    "geosite:category-ntp"
+                ],
+                "skipFallback": true
+            },
+            "https://dns.cloudflare.com/dns-query",
+            "https://dns.google/dns-query"
+        ]
+    },
+    "routing": {
+        "domainStrategy": "IPOnDemand",
+        "rules": [
+            {
+                "inboundTag": [
+                    "transparent"
+                ],
+                "protocol": [
+                    "bittorent"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "inboundTag": [
+                    "transparent"
+                ],
+                "port": 53,
+                "outboundTag": "dns-out"
+            },
+            {
+                "inboundTag": [
+                    "transparent"
+                ],
+                "port": 123,
+                "network": "udp",
+                "outboundTag": "direct"
+            },
+            {
+                "inboundTag": [
+                    "transparent"
+                ],
+                "domain": [
+                    "geosite:category-ads-all"
+                ],
+                "outboundTag": "block"
+            },
+            {
+                "inboundTag": [
+                    "transparent"
+                ],
+                "domain": [
+                    "geosite:private"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "inboundTag": [
+                    "transparent"
+                ],
+                "ip": [
+                    "geoip:private"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "inboundTag": [
+                    "transparent"
+                ],
+                "outboundTag": "proxy"
+            },
+            {
+                "inboundTag": [
+                    "socks"
+                ],
+                "ip": [
+                    "geoip:private"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "inboundTag": [
+                    "socks"
+                ],
+                "outboundTag": "proxy"
+            },
+            {
+                "inboundTag": [
+                    "dns-in"
+                ],
+                "ip": [
+                    "192.168.0.1"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "inboundTag": [
+                    "dns-in"
+                ],
+                "outboundTag": "proxy"
+            }
+        ]
+    }
+}
