@@ -1,0 +1,95 @@
+{
+    "inbounds": [
+        {
+            "protocol": "vless",
+            "port": 80,
+            "settings": {
+                "clients": [],
+                "decryption": "none",
+                "fallbacks": [
+                    {
+                        "dest": 901,
+                        "xver": 1
+                    }
+                ]
+            }
+        },
+        {
+            "tag": "vless-tls",
+            "protocol": "vless",
+            "port": 443,
+            "settings": {
+                "clients": [
+                    {
+                        "id": "<id>",
+                        "email": "<name>",
+                        "flow": "xtls-rprx-vision"
+                    }
+                ],
+                "decryption": "none",
+                "fallbacks": [
+                    {
+                        "dest": 902,
+                        "xver": 1
+                    },
+                    {
+                        "alpn": "h2",
+                        "dest": 903,
+                        "xver": 1
+                    }
+                ]
+            },
+            "streamSettings": {
+                "security": "tls",
+                "tlsSettings": {
+                    "minVersion": "1.2",
+                    "certificates": [
+                        {
+                            "certificateFile": "/etc/xray/fullchain.pem",
+                            "keyFile": "/etc/xray/privkey.pem"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "tag": "reverse-private",
+            "protocol": "tunnel",
+            "listen": "127.0.0.1",
+            "port": "901,902,903",
+            "settings": {
+                "address": "127.0.0.1",
+                "portMap": {
+                    "901": ":8080",
+                    "902": ":8081",
+                    "903": ":8082"
+                }
+            }
+        }
+    ],
+    "reverse": {
+        "portals": [
+            {
+                "tag": "portal",
+                "domain": "reverse.xray.internal"
+            }
+        ]
+    },
+    "routing": {
+        "domainStrategy": "IPOnDemand",
+        "rules": [
+            {
+                "domain": [
+                    "full:reverse.xray.internal"
+                ],
+                "outboundTag": "portal"
+            },
+            {
+                "inboundTag": [
+                    "reverse-private"
+                ],
+                "outboundTag": "portal"
+            }
+        ]
+    }
+}

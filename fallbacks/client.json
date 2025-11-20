@@ -1,0 +1,62 @@
+{
+    "outbounds": [
+        {
+            "tag": "direct",
+            "protocol": "freedom"
+        },
+        {
+            "tag": "proxy",
+            "protocol": "vless",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "<domain>",
+                        "port": 443,
+                        "users": [
+                            {
+                                "id": "<id>",
+                                "encryption": "none",
+                                "flow": "xtls-rprx-vision"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "security": "tls",
+                "tlsSettings": {
+                    "serverName": "<domain>",
+                    "fingerprint": "chrome"
+                }
+            }
+        }
+    ],
+    "reverse": {
+        "bridges": [
+            {
+                "tag": "bridge",
+                "domain": "reverse.xray.internal"
+            }
+        ]
+    },
+    "routing": {
+        "domainStrategy": "IPOnDemand",
+        "rules": [
+            {
+                "inboundTag": [
+                    "bridge"
+                ],
+                "domain": [
+                    "full:reverse.xray.internal"
+                ],
+                "outboundTag": "proxy"
+            },
+            {
+                "inboundTag": [
+                    "bridge"
+                ],
+                "outboundTag": "direct"
+            }
+        ]
+    }
+}

@@ -8,6 +8,10 @@ Here I put examples of V2Ray (V2Fly, Xray, sing-box) usage. This project is addi
 
 Execute V2Ray using Docker Compose.
 
+### [fallbacks](/fallbacks/)
+
+Pass HTTP and HTTPS traffic from public server to local server. `nginx.conf` should be deployed locally.
+
 ### [private-subnet](/private-subnet/)
 
 Access remote private subnet. You should deploy bastion host in a public subnet which runs `server.json`. Bastion host forwards traffic to any address in the private subnet or to specific service in the private subnet.
