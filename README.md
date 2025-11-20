@@ -1,6 +1,6 @@
 # V2Ray Examples
 
-Here I put examples of V2Ray (V2Fly, Xray, sing-box) usage. This project is addition to [v2ray-examples](https://github.com/v2fly/v2ray-examples), [Xray-examples](https://github.com/XTLS/Xray-examples), [v2ray-step-by-step](https://github.com/v2fly/v2ray-step-by-step) and [ToutyRater guide](https://github.com/ToutyRater/v2ray-guide).
+Here I put examples of V2Ray usage. V2Ray means [V2Ray](https://github.com/v2ray/v2ray-core), [V2Fly](https://github.com/v2fly/v2ray-core) or [Xray](https://github.com/XTLS/Xray-core). Examples suit for any, just adapt to the one you using. This project is addition to [v2ray-examples](https://github.com/v2fly/v2ray-examples), [Xray-examples](https://github.com/XTLS/Xray-examples), [v2ray-step-by-step](https://github.com/v2fly/v2ray-step-by-step) and [ToutyRater guide](https://github.com/ToutyRater/v2ray-guide).
 
 ## Examples
 
