@@ -1,0 +1,66 @@
+{
+    "inbounds": [
+        {
+            "tag": "vmess",
+            "protocol": "vmess",
+            "port": 2001,
+            "settings": {
+                "clients": [
+                    {
+                        "id": "<id>",
+                        "email": "<name>"
+                    }
+                ]
+            }
+        },
+        {
+            "tag": "reverse-public",
+            "protocol": "tunnel",
+            "listen": "0.0.0.0",
+            "port": "2002",
+            "settings": {
+                "address": "127.0.0.1",
+                "portMap": {
+                    "2002": ":22"
+                }
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "tag": "direct",
+            "protocol": "freedom"
+        }
+    ],
+    "reverse": {
+        "portals": [
+            {
+                "tag": "portal",
+                "domain": "reverse.xray.internal"
+            }
+        ]
+    },
+    "routing": {
+        "domainStrategy": "IPOnDemand",
+        "rules": [
+            {
+                "domain": [
+                    "full:reverse.xray.internal"
+                ],
+                "outboundTag": "portal"
+            },
+            {
+                "inboundTag": [
+                    "reverse-public"
+                ],
+                "outboundTag": "portal"
+            },
+            {
+                "ip": [
+                    "192.0.0.0/24"
+                ],
+                "outboundTag": "portal"
+            }
+        ]
+    }
+}

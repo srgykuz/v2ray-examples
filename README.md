@@ -20,6 +20,10 @@ Access remote private subnet. You should deploy bastion host in a public subnet 
 
 At client side configure protocols that: proxy all sites, proxy specific sites and bypass all others, bypass specific sites and proxy all others. Quickly switch between these protocols as needed.
 
+### [reverse](/reverse/)
+
+Access client host via SSH using server public IP without enabling V2Ray. Access client LAN hosts via V2Ray using private IP.
+
 ### [self-signed-tls](/self-signed-tls/)
 
 Generate self-signed CA and server certificate for use in TLS without enabling `insecure` option. Avoid MITM attack at client side by properly validating TLS.

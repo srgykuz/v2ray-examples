@@ -1,0 +1,85 @@
+{
+    "outbounds": [
+        {
+            "tag": "direct",
+            "protocol": "freedom"
+        },
+        {
+            "tag": "proxy",
+            "protocol": "vmess",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "<ip>",
+                        "port": 2001,
+                        "users": [
+                            {
+                                "id": "<id>"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "tag": "reverse-localhost",
+            "protocol": "freedom",
+            "settings": {
+                "redirect": "127.0.0.1:0"
+            }
+        },
+        {
+            "tag": "reverse-lanhost",
+            "protocol": "freedom",
+            "settings": {
+                "redirect": "192.168.0.155:0"
+            }
+        }
+    ],
+    "reverse": {
+        "bridges": [
+            {
+                "tag": "bridge",
+                "domain": "reverse.xray.internal"
+            }
+        ]
+    },
+    "routing": {
+        "domainStrategy": "IPOnDemand",
+        "rules": [
+            {
+                "inboundTag": [
+                    "bridge"
+                ],
+                "domain": [
+                    "full:reverse.xray.internal"
+                ],
+                "outboundTag": "proxy"
+            },
+            {
+                "inboundTag": [
+                    "bridge"
+                ],
+                "ip": [
+                    "192.0.0.1"
+                ],
+                "outboundTag": "reverse-localhost"
+            },
+            {
+                "inboundTag": [
+                    "bridge"
+                ],
+                "ip": [
+                    "192.0.0.2"
+                ],
+                "outboundTag": "reverse-lanhost"
+            },
+            {
+                "inboundTag": [
+                    "bridge"
+                ],
+                "outboundTag": "direct"
+            }
+        ]
+    }
+}
