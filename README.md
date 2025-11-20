@@ -28,6 +28,10 @@ Access client host via SSH using server public IP without enabling V2Ray. Access
 
 Generate self-signed CA and server certificate for use in TLS without enabling `insecure` option. Avoid MITM attack at client side by properly validating TLS.
 
+### [systemd](/systemd/)
+
+Execute V2Ray using systemd. Put: executable in `/usr/local/bin`, config in `/usr/local/etc/v2ray`, log in `/var/log/v2ray`, service as `/etc/systemd/system/v2ray.service`, logrotate as `/etc/logrotate.d/v2ray`. Run as user `nobody`.
+
 ### [tunnel](/tunnel/)
 
 Access private host from public internet or turn this host into proxy. Run `bridge.jsonc` at the private host and run `portal.jsonc` at a public VPS. Traffic flows this way: client -> VPS (portal) -> private host (bridge) -> internet.
