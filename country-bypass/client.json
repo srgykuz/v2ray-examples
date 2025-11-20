@@ -1,0 +1,129 @@
+{
+    "inbounds": [
+        {
+            "tag": "socks",
+            "protocol": "socks",
+            "listen": "0.0.0.0",
+            "port": 2000,
+            "settings": {
+                "udp": true
+            },
+            "sniffing": {
+                "enabled": true,
+                "destOverride": [
+                    "http",
+                    "tls"
+                ]
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "tag": "direct",
+            "protocol": "freedom"
+        },
+        {
+            "tag": "dns-out",
+            "protocol": "dns"
+        },
+        {
+            "tag": "vmess",
+            "protocol": "vmess",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "<address>",
+                        "port": 3000,
+                        "users": [
+                            {
+                                "id": "<id>"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ],
+    "dns": {
+        "tag": "dns-in",
+        "queryStrategy": "UseIPv4",
+        "hosts": {
+            "dns.cloudflare.com": "1.1.1.1",
+            "dns.google": "8.8.8.8"
+        },
+        "servers": [
+            {
+                "address": "192.168.0.1",
+                "domains": [
+                    "geosite:private",
+                    "geosite:category-ru"
+                ],
+                "skipFallback": true
+            },
+            "https://dns.cloudflare.com/dns-query",
+            "https://dns.google/dns-query"
+        ]
+    },
+    "routing": {
+        "domainStrategy": "IPOnDemand",
+        "rules": [
+            {
+                "inboundTag": [
+                    "socks"
+                ],
+                "protocol": [
+                    "bittorent"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "inboundTag": [
+                    "socks"
+                ],
+                "port": 53,
+                "outboundTag": "dns-out"
+            },
+            {
+                "inboundTag": [
+                    "socks"
+                ],
+                "domain": [
+                    "geosite:private",
+                    "geosite:category-ru"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "inboundTag": [
+                    "socks"
+                ],
+                "ip": [
+                    "geoip:private",
+                    "geoip:ru"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "inboundTag": [
+                    "socks"
+                ],
+                "outboundTag": "proxy"
+            },
+            {
+                "inboundTag": [
+                    "dns-in"
+                ],
+                "ip": [
+                    "192.168.0.1"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "inboundTag": [
+                    "dns-in"
+                ],
+                "outboundTag": "proxy"
+            }
+        ]
+    }
+}

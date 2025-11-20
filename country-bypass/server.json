@@ -1,0 +1,38 @@
+{
+    "inbounds": [
+        {
+            "tag": "vmess",
+            "protocol": "vmess",
+            "port": 3000,
+            "settings": {
+                "clients": [
+                    {
+                        "id": "<id>",
+                        "email": "<name>"
+                    }
+                ]
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "tag": "direct",
+            "protocol": "freedom"
+        },
+        {
+            "tag": "block",
+            "protocol": "blackhole"
+        }
+    ],
+    "routing": {
+        "domainStrategy": "IPOnDemand",
+        "rules": [
+            {
+                "ip": [
+                    "geoip:private"
+                ],
+                "outboundTag": "block"
+            }
+        ]
+    }
+}

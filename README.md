@@ -4,6 +4,10 @@ Here I put examples of V2Ray usage. V2Ray means [V2Ray](https://github.com/v2ray
 
 ## Examples
 
+### [country-bypass](/country-bypass/)
+
+Send traffic to domains of specific country directly and proxy all other traffic. Including DNS resolution. Replace `192.168.0.1` with router IP.
+
 ### [docker](/docker/)
 
 Execute V2Ray using Docker Compose.
