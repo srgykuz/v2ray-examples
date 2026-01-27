@@ -43,3 +43,7 @@ Run V2Ray as transparent proxy to intercept all traffic. For example you can run
 ### [tunnel](/tunnel/)
 
 Access private host from public internet or turn this host into proxy. Run `bridge.jsonc` at the private host and run `portal.jsonc` at a public VPS. Traffic flows this way: client -> VPS (portal) -> private host (bridge) -> internet.
+
+### [warp](/warp/)
+
+Send traffic to specific domains via Cloudflare Warp and proxy all other traffic directly. Cloudflare Warp should be configured on the server side.

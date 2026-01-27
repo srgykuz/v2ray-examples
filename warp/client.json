@@ -1,0 +1,80 @@
+{
+    "log": {
+        "loglevel": "info"
+    },
+    "inbounds": [
+        {
+            "protocol": "socks",
+            "tag": "socks",
+            "listen": "127.0.0.1",
+            "port": 2000,
+            "settings": {
+                "udp": true
+            },
+            "sniffing": {
+                "enabled": true,
+                "destOverride": [
+                    "http",
+                    "tls"
+                ]
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "protocol": "freedom",
+            "tag": "direct"
+        },
+        {
+            "protocol": "blackhole",
+            "tag": "block"
+        },
+        {
+            "protocol": "vless",
+            "tag": "proxy",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "<ip or domain>",
+                        "port": 443,
+                        "users": [
+                            {
+                                "id": "<uuid>",
+                                "encryption": "none"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "security": "tls",
+                "tlsSettings": {
+                    "serverName": "<domain>",
+                    "fingerprint": "chrome"
+                }
+            }
+        }
+    ],
+    "routing": {
+        "domainStrategy": "IPOnDemand",
+        "rules": [
+            {
+                "type": "field",
+                "inboundTag": [
+                    "socks"
+                ],
+                "ip": [
+                    "geoip:private"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "type": "field",
+                "inboundTag": [
+                    "socks"
+                ],
+                "outboundTag": "proxy"
+            }
+        ]
+    }
+}

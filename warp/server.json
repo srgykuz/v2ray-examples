@@ -1,0 +1,73 @@
+{
+    "log": {
+        "loglevel": "info"
+    },
+    "inbounds": [
+        {
+            "protocol": "vless",
+            "port": 443,
+            "settings": {
+                "clients": [
+                    {
+                        "id": "<uuid>",
+                        "email": "<name>"
+                    }
+                ],
+                "decryption": "none"
+            },
+            "streamSettings": {
+                "security": "tls",
+                "tlsSettings": {
+                    "certificates": [
+                        {
+                            "certificateFile": "/etc/tls/server.crt",
+                            "keyFile": "/etc/tls/server.key"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "protocol": "freedom",
+            "tag": "direct"
+        },
+        {
+            "protocol": "blackhole",
+            "tag": "block"
+        },
+        {
+            "protocol": "socks",
+            "tag": "warp",
+            "settings": {
+                "servers": [
+                    {
+                        "address": "127.0.0.1",
+                        "port": 40000
+                    }
+                ]
+            }
+        }
+    ],
+    "routing": {
+        "domainStrategy": "IPOnDemand",
+        "rules": [
+            {
+                "type": "field",
+                "ip": [
+                    "geoip:private"
+                ],
+                "outboundTag": "block"
+            },
+            {
+                "type": "field",
+                "domain": [
+                    "test1.com",
+                    "test2.com"
+                ],
+                "outboundTag": "warp"
+            }
+        ]
+    }
+}
